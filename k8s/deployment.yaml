@@ -1,0 +1,33 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: outage_monitor_deploy
+spec:
+  selector:
+    matchLabels:
+      app: outage_monitor_pod
+  template:
+    metadata:
+      labels:
+        app: outage_monitor_pod
+    spec:
+      containers:
+        - name: outage_monitor_main
+          image: github.com/doesnotcommit/outage_monitor:v1
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: outage_monitor_cm
+            - secretRef:
+                name: outage_monitor_sec
+          resources:
+            limits:
+              cpu: 0.5
+              memory: 512Mi
+            requests:
+              cpu: 0.1
+              memory: 128Mi
+  replicas: 1
